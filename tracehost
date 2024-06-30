@@ -115,7 +115,7 @@ parser.add_argument('-H', '--Help', action='store_const', const='help')
 
 if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
-    if args.Help or len(sys.args) == 0:
+    if args.Help or len(sys.argv) == 0:
         help()
     else:
         try:
