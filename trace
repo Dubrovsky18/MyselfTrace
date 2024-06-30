@@ -1,0 +1,121 @@
+from scapy.all import sr1, IP, ICMP, IPv6, TCP, UDP
+import time
+import argparse
+import sys
+import socket 
+
+
+def help():
+    print("""
+    Добро пожаловать в справку по функции trace!
+    
+    Использование:
+        python3 trace [options] target
+    
+    Опции:
+        -4, --ipv4          Использовать IPv4 (по умолчанию)
+        -6, --ipv6          Использовать IPv6
+        -t, --tcp           Использовать TCP протокол (по умолчанию)
+        -u, --udp           Использовать UDP протокол
+        -m, --max_hops      Максимальное количество прыжков (по умолчанию 30)
+        -f, --first_ttl     Начальное значение TTL (по умолчанию 1)
+        -p, --port          Порт (по умолчанию 80 для TCP и 53 для UDP)
+          
+    Пример использования:
+        python3 trace -4 -t -m 30 -p 80 google.com      
+          """)
+
+
+def get_hostname(ip_address):
+    try:
+        hostname = socket.gethostbyaddr(ip_address)
+        return hostname[0]
+    except socket.herror as e:
+        return ip_address
+    
+def create_packet(hostname, ttl=28, protocol='icmp', port=80, ip_version='ipv4'):
+    if ip_version == 'ipv6':
+        ip_header = IPv6(dst=hostname, hlim=ttl)
+    else:
+        ip_header = IP(dst=hostname, ttl=ttl)
+
+    if protocol == 'icmp':
+        packet = ip_header / ICMP()
+    elif protocol == 'tcp':
+        packet = ip_header / TCP(dport=port)
+    elif protocol == 'udp':
+        packet = ip_header / UDP(dport=port)
+
+    return packet
+
+
+def traceroute(args):
+    TTL = int(args.max_hops)
+    firstTTL = int(args.first_ttl)
+    host = args.host
+    protocol = args.protocol
+    if args.port:
+        port = int(args.port)
+    else:
+        if protocol == 'udp':
+            port = 53
+        else:
+            port = 80
+    ip_version = 'ipv6' if args.ipv6 == '6' else 'ipv4'
+
+    for ttl in range(firstTTL, TTL):
+        total_time = 0
+        result=""
+        time_result="| "
+        packet = create_packet(host, ttl, protocol, port, ip_version)
+        
+        for j in range(3):
+            start_time = time.time()  
+            reply = sr1(packet, verbose=0, timeout=0.2)
+            end_time = time.time()
+
+            if reply is None:
+                result += "* "
+                time_result += "* "
+            else:
+                if reply.src not in result:
+                    result += reply.src + " "
+                timers = float(end_time - start_time) * 1000
+                total_time += timers
+                time_result += (f"{timers:.2f} ms ")
+
+        avg_time = total_time / 3 
+
+
+        print(f"{ttl}    {result}  {time_result}")
+        if reply:
+            hostname = get_hostname(reply.src)
+            print(f"hops away: {hostname}, Average time: {avg_time:.2f} ms")
+            if reply.src == host or hostname == host:
+                print(f"Done!")
+                break
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-6', '--ipv6', action='store_const', const='6')
+parser.add_argument('-4', '--ipv4', action='store_const', const='4')
+parser.add_argument('-t', '--tcp', action='store_const', const='tcp')
+parser.add_argument('-I', '--icmp', action='store_const', const='icmp')
+parser.add_argument('-m', '--max_hops', default='30')
+parser.add_argument('-p', '--port', default=80)
+parser.add_argument('-P', '--protocol', default='icmp')
+parser.add_argument('-V', '--version', action='store_const', const='version')
+parser.add_argument('-f', '--first_ttl', default=0)
+parser.add_argument('host', nargs='?', help='Hostname or IP address')
+parser.add_argument('-H', '--Help', action='store_const', const='help')
+
+
+if __name__ == "__main__":
+    args = parser.parse_args(sys.argv[1:])
+    if args.Help:
+        help()
+    else:
+        try:
+            traceroute(args)
+        except Exception:
+            help()
