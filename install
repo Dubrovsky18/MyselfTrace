@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mv trace /home/$USER/.local/bin/trace
-chmod +x /home/$USER/.local/bin/trace
-echo "alias trace='sudo python3 /home/$USER/.local/bin/trace'" >> ~/.bashrc
+mkdir -p ~/.local/bin/tracehost && cp tracehost ~/.local/bin/tracehost
+chmod +x ~/.local/bin/tracehost
+echo "alias tracehost='sudo python3 ~/.local/bin/tracehost'" >> ~/.bashrc
 source ~/.bashrc

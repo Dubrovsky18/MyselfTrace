@@ -10,7 +10,7 @@ def help():
     Добро пожаловать в справку по функции trace!
     
     Использование:
-        python3 trace [options] target
+        tracehost [options] target
     
     Опции:
         -4, --ipv4          Использовать IPv4 (по умолчанию)
@@ -22,7 +22,7 @@ def help():
         -p, --port          Порт (по умолчанию 80 для TCP и 53 для UDP)
           
     Пример использования:
-        python3 trace -4 -t -m 30 -p 80 google.com      
+        tracehost -4 -t -m 30 -p 80 google.com      
           """)
 
 
