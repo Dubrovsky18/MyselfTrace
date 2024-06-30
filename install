@@ -5,9 +5,8 @@ pip install -r requirements.txt
 mkdir -p ~/.local/bin/ && cp -r tracehost ~/.local/bin/tracehost
 chmod +x ~/.local/bin/tracehost
 
-if ! grep -q "alias trace='sudo python3 ~/.local/bin/trace'" ~/.bashrc; then
-    echo "alias trace='sudo python3 ~/.local/bin/trace'" >> ~/.bashrc
-    source ~/.bashrc
+if ! grep -q "alias tracehost='sudo python3 ~/.local/bin/tracehost'" ~/.bashrc; then
+    echo "alias tracehost='sudo python3 ~/.local/bin/tracehost'" >> ~/.bashrc
 fi
 
 source ~/.bashrc

@@ -14,17 +14,21 @@ bash install
 Для установки и использования этого скрипта на Linux выполните следующие шаги:
 
 1. Склонируйте репозиторий или загрузите `tracehost` файл.
-2. Переместите `tracehost` в директорию `~/.local/bin/`:
+2. Установить необходимые зависимости на вашу ОС через `pip`:
     ```sh
-    mv tracehost ~/.local/bin/tracehost
+    pip install -r requirements.txt
     ```
-3. Сделайте файл `tracehost` исполняемым:
+3. Переместите `tracehost` в директорию `~/.local/bin/`:
     ```sh
-    chmod +x ~/.local/bin/trace
+    cp tracehost ~/.local/bin/tracehost
     ```
-4. Добавьте алиас для команды `tracehost` в ваш `~/.bashrc`:
+2. Сделайте файл `tracehost` исполняемым:
     ```sh
-    echo "alias trace='sudo python3 ~/.local/bin/trace'" >> ~/.bashrc
+    chmod +x ~/.local/bin/tracehost
+    ```
+3. Добавьте алиас для команды `tracehost` в ваш `~/.bashrc`:
+    ```sh
+    echo "alias tracehost='sudo python3 ~/.local/bin/tracehost'" >> ~/.bashrc
     source ~/.bashrc
     ```
 
